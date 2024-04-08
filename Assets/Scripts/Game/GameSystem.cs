@@ -149,7 +149,7 @@ namespace Clotris.Game
                 int y_pos = Mathf.RoundToInt(localPosition.y - y_offset);
                 int x_pos = Mathf.RoundToInt(localPosition.x - x_offset);
 
-                if(y_pos > gameArea.GetAreaHeight())
+                if(y_pos >= gameArea.GetAreaHeight())
                 {
                     // There's no room for the piece to move downward on the puzzle board. The game is over
                     gameOver = true;

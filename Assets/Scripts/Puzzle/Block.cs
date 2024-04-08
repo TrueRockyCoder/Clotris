@@ -40,5 +40,15 @@ namespace Clotris.Puzzle
             return p;
         }
 
+        public float GetXPos()
+        {
+            return transform.position.x;
+        }
+
+        public float GetYPos()
+        {
+            return transform.position.y;
+        }
+
     }
 }

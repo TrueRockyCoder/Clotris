@@ -106,6 +106,11 @@ namespace Clotris.Puzzle
             transform.position = new Vector2(xpos, rb.position.y);
         }
 
+        public void WallPush(Vector2 direction)
+        {
+            transform.Translate(direction, Space.World);
+        }
+
         public float GetRightPosition()
         {
             float furthestRight = 0.0f;
@@ -131,7 +136,7 @@ namespace Clotris.Puzzle
             transform.position = new Vector2(rb.position.x, ypos);
         }
 
-        public void MoveVertical(float y)
+        public void MovePieceVertical(float y)
         {
             rb.MovePosition(new Vector2(rb.position.x, rb.position.y + y));
         }
@@ -149,10 +154,11 @@ namespace Clotris.Puzzle
             {
                 foreach (RaycastHit2D hit in Physics2D.RaycastAll(block.position, Vector2.down, 30f))
                 {
-                    if (hit.transform == this.transform ||
-                        hit.transform.parent == this.transform) continue;
+                    // Verify if any Collision is with this object or any children (Blocks, Block Sides)
+                    if (hit.transform.IsChildOf(transform)) continue;
                     Wall w = hit.transform.GetComponent<Wall>();
                     if (w && w.GetWallType() != WallType.floor) continue;
+                    if (hit.transform.GetComponent<BlockSide>() && !hit.transform.GetComponent<BlockSide>().IsTopSide()) continue;
 
                     validHits.Add(hit);
                 }
@@ -169,13 +175,14 @@ namespace Clotris.Puzzle
                 if (hit.distance < closestHit.distance) closestHit = hit;
             }
 
-            if (closestHit.transform.GetComponent<Block>() != null)
+            if (closestHit.transform.GetComponent<BlockSide>() != null)
             {
-                MoveVertical(-closestHit.distance + 0.5f);
+                // closestHit is the top side of another Piece
+                MovePieceVertical(-closestHit.distance + 0.5f);
             }
             else if (closestHit.transform.GetComponent<Wall>() != null)
             {
-                MoveVertical(-closestHit.distance);
+                MovePieceVertical(-closestHit.distance);
             }
         }
 

@@ -34,7 +34,7 @@ namespace Clotris.Puzzle
         private void OnTriggerExit2D(Collider2D collision)
         {
             Piece p = collision.transform.GetComponent<Piece>();
-            Block b = collision.GetComponent<Block>();
+            BlockSide bS = collision.GetComponent<BlockSide>();
             if (p)
             {
                 if (wallType == WallType.right)
@@ -47,24 +47,39 @@ namespace Clotris.Puzzle
                     p.ToggleMoveableLeft();
                 }
             }
-            else if (b)
+            else if (bS)
             {
-                float moveBack = 0.0f;
-                moveBack = CheckWallRotation(b);
-                if (moveBack != 0.0f)
-                {
-                    Piece attachedPiece = b.GetPiece();
-                    attachedPiece.SetXPosition(attachedPiece.transform.position.x - moveBack);
+                switch (wallType){
+                    case WallType.left:
+                        if(bS.GetSide().x == -1 && GetDistanceBetweenPoints(bS.GetAttachedBlock().GetXPos()) <= -1)
+                        {
+                            // Push the piece back by one
+                            bS.GetAttachedBlock().GetPiece().WallPush(Vector2.right);
+                        }
+                        break;
+                    case WallType.right:
+                        if (bS.GetSide().x == 1 && GetDistanceBetweenPoints(bS.GetAttachedBlock().GetXPos()) >= 1)
+                        {
+                            // Push the piece back by one
+                            bS.GetAttachedBlock().GetPiece().WallPush(Vector2.left);
+                        }
+                        break;
+                    case WallType.floor:
+                        if (bS.GetSide().y == -1 && (bS.GetAttachedBlock().GetYPos() - transform.position.y >= 1))
+                        {
+                            // Push the piece back by one
+                            bS.GetAttachedBlock().GetPiece().WallPush(Vector2.up);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
         }
 
-
-        private float CheckWallRotation(Block b)
+        private int GetDistanceBetweenPoints(float sideX)
         {
-            if ((wallType == WallType.right && b.transform.position.x < transform.position.x)
-                || (wallType == WallType.left && b.transform.position.x > transform.position.x)) return 0.0f;
-            return b.transform.position.x - transform.position.x;
+            return Mathf.RoundToInt(sideX - transform.position.x);
         }
 
         public WallType GetWallType()

@@ -4,11 +4,28 @@ using UnityEngine;
 
 namespace Clotris.Puzzle
 {
-    public class Block_Side : MonoBehaviour
-    { 
-        private Vector2 getSide()
+    public class BlockSide : MonoBehaviour
+    {
+        Block b;
+        private void Start()
+        {
+            b = transform.parent.GetComponent<Block>();
+        }
+
+        public bool IsTopSide()
+        {
+            return Mathf.RoundToInt(GetSide().y) == 1;
+        }
+
+
+        public Vector2 GetSide()
         {
             return (transform.position - transform.parent.position).normalized;
+        }
+
+        public Block GetAttachedBlock()
+        {
+            return b;
         }
 
         private void OnTriggerEnter2D(Collider2D collision)
@@ -17,7 +34,7 @@ namespace Clotris.Puzzle
 
             if (p == null) return;
 
-            Vector2 side = getSide();
+            Vector2 side = GetSide();
             if(side.x == 1)
             {
                 // Points right; Prevent piece from moving right
@@ -46,7 +63,7 @@ namespace Clotris.Puzzle
 
             if (p == null) return;
 
-            Vector2 side = getSide();
+            Vector2 side = GetSide();
             if (side.x == 1)
             {
                 // Points right; Prevent piece from moving left, into the right side
